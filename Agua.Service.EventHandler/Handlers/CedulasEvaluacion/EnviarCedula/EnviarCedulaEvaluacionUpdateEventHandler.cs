@@ -47,7 +47,10 @@ namespace Agua.Service.EventHandler.Handlers.CedulasEvaluacion
                     cedula.EstatusId = request.EstatusId;
                     if (calificacion < 10)
                     {
-                        string calif = calificacion.ToString().Substring(0, 3);
+                        //string calif = calificacion.ToString().Substring(0, 3);
+                        //cedula.Calificacion = Convert.ToDouble(calif);
+
+                        string calif = (Math.Round(calificacion, 1)).ToString();
                         cedula.Calificacion = Convert.ToDouble(calif);
                     }
                     else
@@ -55,9 +58,11 @@ namespace Agua.Service.EventHandler.Handlers.CedulasEvaluacion
                         cedula.Calificacion = (double)calificacion;
                     }
 
-                    if (calificacion < Convert.ToDecimal(8))
+                    if (Convert.ToDecimal(cedula.Calificacion) < Convert.ToDecimal(8))
                     {
-                        cedula.Penalizacion = (Convert.ToDecimal(facturas.Sum(f => f.Subtotal)) * Convert.ToDecimal(0.01)) / calificacion;
+                        //cedula.Penalizacion = (Convert.ToDecimal(facturas.Sum(f => f.Subtotal)) * Convert.ToDecimal(0.01)) / calificacion;
+                        cedula.Penalizacion = (Convert.ToDecimal(facturas.Sum(f => f.Subtotal)) * Convert.ToDecimal(0.01)) / Convert.ToDecimal(cedula.Calificacion);
+                        cedula.Penalizacion = Math.Round(cedula.Penalizacion, 2);
                     }
                     else
                     {
@@ -117,6 +122,7 @@ namespace Agua.Service.EventHandler.Handlers.CedulasEvaluacion
 
             var respuestas = _context.Respuestas.Where(r => r.CedulaEvaluacionId == cedula).ToList();
 
+            //Bucle que recorre cada una de las preguntas con su respuesta e informacion como tipo, ponderacion, etc.
             foreach (var rs in respuestas)
             {
                 var cm = cuestionario.Single(c => c.Consecutivo == rs.Pregunta);
@@ -125,16 +131,10 @@ namespace Agua.Service.EventHandler.Handlers.CedulasEvaluacion
                     calidad = !calidad;
                     incidencias = _context.Incidencias.Where(i => i.CedulaEvaluacionId == cedula && i.Pregunta == cm.Consecutivo
                                                             && !i.FechaEliminacion.HasValue).Count();
+                                    
+                    //La Ponderacion de la pregunta (9) se divide a la mita, dejandola como 4.5 
+                    ponderacion = Convert.ToDecimal(cm.Ponderacion) / Convert.ToDecimal(2);
                     
-                    if (cm.Formula.Contains("CTG"))
-                    {
-                        ponderacion = Convert.ToDecimal(incidencias) * Convert.ToDecimal(0.01);
-                        ponderacion = Convert.ToDecimal(cm.Ponderacion) - Convert.ToDecimal(ponderacion);
-                    }
-                    else 
-                    {
-                        ponderacion = Convert.ToDecimal(cm.Ponderacion) / Convert.ToDecimal(2);
-                    }
 
                     calificacion += ponderacion;
 

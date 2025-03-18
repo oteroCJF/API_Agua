@@ -25,5 +25,7 @@ namespace Agua.Service.EventHandler.Commands.Incidencias
         public DateTime FechaCreacion { get; set; }
         public DateTime FechaActualizacion { get; set; }
         public DateTime? FechaEliminacion { get; set; }
+        public List<int> DTIncidencia { get; set; } = new List<int>();
+
     }
 }

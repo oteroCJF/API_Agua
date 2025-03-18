@@ -26,6 +26,7 @@ namespace Agua.Domain.DFacturas
         public string? ArchivoXML { get; set; }
         public string? ArchivoPDF { get; set; }
         public System.Nullable<DateTime> FechaCreacion { get; set; }
+        public System.Nullable<DateTime> FechaEliminacion { get; set; }
         public System.Nullable<DateTime> FechaActualizacion { get; set; }
     }
 }
