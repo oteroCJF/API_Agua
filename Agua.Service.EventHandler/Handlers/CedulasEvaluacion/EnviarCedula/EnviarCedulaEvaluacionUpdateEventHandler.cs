@@ -128,7 +128,7 @@ namespace Agua.Service.EventHandler.Handlers.CedulasEvaluacion
                 var cm = cuestionario.Single(c => c.Consecutivo == rs.Pregunta);
                 if (cm.ACLRS == rs.Respuesta && !rs.Detalles.Equals("N/A"))
                 {
-                    calidad = !calidad;
+                    calidad = false;
                     incidencias = _context.Incidencias.Where(i => i.CedulaEvaluacionId == cedula && i.Pregunta == cm.Consecutivo
                                                             && !i.FechaEliminacion.HasValue).Count();
                                     
